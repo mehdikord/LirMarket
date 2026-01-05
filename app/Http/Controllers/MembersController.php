@@ -94,7 +94,9 @@ class MembersController extends Controller
     {
         try {
             $member = Member::findOrFail($id);
-            $reason = $request->input('rejection_reason');
+            $reason="⚠️ حساب کاربری شما رد شد ⚠️\n\n";
+            $reason.= "دلیل: " . $request->input('rejection_reason');
+
 
             // حذف تمام اسناد verification
             Member_Document::where('member_id', $id)
@@ -120,7 +122,7 @@ class MembersController extends Controller
     protected function sendApprovalMessage($chatId)
     {
         try {
-            $message = "تبریک ، حساب کاربری شما توسط مدیریت لیر مارکت تایید شد .";
+            $message = " ✅ تبریک ، حساب کاربری شما توسط مدیریت لیر مارکت تایید شد . ";
 
             // ایجاد دکمه‌های منو اصلی
             $keyboard = [

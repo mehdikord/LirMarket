@@ -15,7 +15,9 @@ class Member_Request extends Model
         'amount',
         'file_url',
         'receive_code',
+        'recieve_name',
         'status',
+        'code',
     ];
 
     protected $casts = [
