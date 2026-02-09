@@ -30,6 +30,33 @@ class MembersController extends Controller
     }
 
     /**
+     * ذخیره کاربر جدید
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|unique:members,phone',
+            'telegram_username' => 'nullable|string|unique:members,telegram_username',
+        ], [
+            'name.required' => 'نام کاربر الزامی است',
+            'phone.required' => 'شماره موبایل الزامی است',
+            'phone.unique' => 'این شماره موبایل قبلا ثبت شده است',
+            'telegram_username.unique' => 'این نام کاربری تلگرام قبلا ثبت شده است',
+        ]);
+
+        Member::create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'telegram_username' => $validated['telegram_username'] ?? null,
+            'verify_code' => str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT),
+        ]);
+
+        return redirect()->route('members.index')
+            ->with('success', 'کاربر با موفقیت اضافه شد');
+    }
+
+    /**
      * نمایش کاربران در انتظار تایید
      */
     public function pendingApproval()
