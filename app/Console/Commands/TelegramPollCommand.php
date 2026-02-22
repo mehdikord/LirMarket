@@ -274,6 +274,7 @@ class TelegramPollCommand extends Command
                     ]);
                 }
             } else {
+                // کاربر و سیستم در انتظار هیچ پیامی نیستند (مثلاً بعد از رد درخواست)
                 $text = $message->get('text') ?? $message->getText() ?? '';
                 if ((string) $text !== '') {
                     $this->info("Received message from {$username}: {$text}");
@@ -281,6 +282,12 @@ class TelegramPollCommand extends Command
                     $command = trim(explode(' ', (string) $text)[0] ?? '');
                     if ($command === '/start' || str_starts_with((string) $command, '/start@')) {
                         $this->handleStartCommand($chat, $chatId);
+                    } else {
+                        // هر پیام دیگر: اگر کاربر تاییدشده است، منوی اصلی را نشان بده
+                        $member = Member::where('telegram_id', (string) $chatId)->first();
+                        if ($member && $member->is_verified) {
+                            $this->showMainMenu($chatId);
+                        }
                     }
                 }
             }

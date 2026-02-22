@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'درخواست های در انتظار')
+@section('title', 'درخواست های تایید شده')
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -9,8 +9,8 @@
         <div class="w-full px-2 py-4">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">درخواست های در انتظار</h1>
-                    <p class="mt-1 text-sm text-gray-500">مدیریت درخواست‌های در انتظار کاربران</p>
+                    <h1 class="text-2xl font-bold text-gray-900">درخواست های تایید شده</h1>
+                    <p class="mt-1 text-sm text-gray-500">مدیریت درخواست‌های تایید شده کاربران</p>
                 </div>
             </div>
         </div>
@@ -18,15 +18,6 @@
 
     <!-- Main Content -->
     <main class="w-full px-2 py-8">
-        @if(session('success'))
-        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
-            <svg class="w-5 h-5 ml-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            {{ session('success') }}
-        </div>
-        @endif
-
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -52,7 +43,7 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-700 text-center">
                                 <div>{{ $req->member->name ?? '-' }}</div>
-                                @if($req->member->telegram_username)
+                                @if($req->member && $req->member->telegram_username)
                                     <div class="text-gray-500 text-xs">{{ '@' . $req->member->telegram_username }}</div>
                                 @endif
                             </td>
@@ -88,23 +79,18 @@
                                 {{ $req->created_at?->format('Y/m/d H:i') ?? '-' }}
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <form action="{{ route('requests.approve', $req->id) }}" method="post" class="inline" onsubmit="return confirm('آیا از تایید این درخواست اطمینان دارید؟');">
-                                        @csrf
-                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-green-600 text-white hover:bg-green-700 transition-colors">
-                                            تایید
-                                        </button>
-                                    </form>
-                                    <button type="button" onclick="openRejectModal({{ $req->id }})" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
-                                            رد
-                                        </button>
-                                </div>
+                                <button type="button" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                                    </svg>
+                                    پرینت
+                                </button>
                             </td>
                         </tr>
                         @empty
                         <tr>
                             <td colspan="10" class="px-4 py-12 text-center text-gray-500">
-                                درخواستی در انتظار وجود ندارد.
+                                درخواست تایید شده‌ای وجود ندارد.
                             </td>
                         </tr>
                         @endforelse
@@ -155,53 +141,5 @@ function closeInvoiceModal() {
 document.getElementById('invoice-modal').addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeInvoiceModal();
 });
-
-var rejectFormActionBase = '{{ url("requests") }}';
-function openRejectModal(requestId) {
-    var form = document.getElementById('reject-form');
-    form.action = rejectFormActionBase + '/' + requestId + '/reject';
-    document.getElementById('reject-reason-textarea').value = '';
-    document.getElementById('reject-modal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-function closeRejectModal() {
-    document.getElementById('reject-modal').classList.add('hidden');
-    document.body.style.overflow = '';
-}
-document.getElementById('reject-modal').addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeRejectModal();
-});
-@if(session('reject_request_id') && $errors->has('rejection_reason'))
-document.addEventListener('DOMContentLoaded', function() {
-    openRejectModal({{ session('reject_request_id') }});
-    document.getElementById('reject-reason-textarea').value = {!! json_encode(old('rejection_reason')) !!};
-});
-@endif
-</script><!-- مودال رد درخواست -->
-<div id="reject-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
-    <div class="fixed inset-0 bg-black bg-opacity-60" onclick="closeRejectModal()"></div>
-    <div class="fixed inset-0 flex items-center justify-center p-4">
-        <div class="relative bg-white rounded-xl shadow-2xl max-w-lg w-full" onclick="event.stopPropagation()">
-            <form id="reject-form" method="post" action="">
-                @csrf
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">رد درخواست</h3>
-                    <label for="reject-reason-textarea" class="block text-sm font-medium text-gray-700 mb-2">دلیل رد کردن درخواست <span class="text-red-500">*</span></label>
-                    <textarea id="reject-reason-textarea" name="rejection_reason" rows="4" required placeholder="دلیل رد درخواست را وارد کنید..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">{{ old('rejection_reason') }}</textarea>
-                    @error('rejection_reason')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="flex gap-3 justify-end px-6 pb-6">
-                    <button type="button" onclick="closeRejectModal()" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
-                        انصراف
-                    </button>
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors">
-                        رد درخواست
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+</script>
 @endsection

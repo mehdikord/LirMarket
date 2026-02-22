@@ -18,6 +18,7 @@ class Member_Request extends Model
         'recieve_name',
         'status',
         'code',
+        'rejection_reason',
     ];
 
     protected $casts = [

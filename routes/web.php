@@ -23,6 +23,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/members/{id}/approve', [MembersController::class, 'approve'])->name('members.approve');
     Route::post('/members/{id}/reject', [MembersController::class, 'reject'])->name('members.reject');
     Route::get('/requests', [RequestsController::class, 'index'])->name('requests.index');
+    Route::post('/requests/{id}/approve', [RequestsController::class, 'approve'])->name('requests.approve');
+    Route::post('/requests/{id}/reject', [RequestsController::class, 'reject'])->name('requests.reject');
+    Route::get('/requests/approved', [RequestsController::class, 'approved'])->name('requests.approved');
 
     // تنظیمات سیستم
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

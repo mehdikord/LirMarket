@@ -182,11 +182,19 @@ class TelegramBotController extends Controller
                         }
                     } elseif ($message->has('text')) {
                         $text = $message->getText();
+                        $command = trim(explode(' ', (string) $text)[0] ?? '');
 
                         // بررسی دستور /start
-                        if ($text === '/start') {
+                        if ($command === '/start' || str_starts_with((string) $command, '/start@')) {
                             $this->handleStartCommand($chat, $chatId);
                             $processed++;
+                        } else {
+                            // کاربر و سیستم در انتظار هیچ پیامی نیستند؛ هر پیام دیگر → منوی اصلی برای کاربر تاییدشده
+                            $member = Member::where('telegram_id', (string) $chatId)->first();
+                            if ($member && $member->is_verified) {
+                                $this->showMainMenu($chatId);
+                                $processed++;
+                            }
                         }
                     }
                 }

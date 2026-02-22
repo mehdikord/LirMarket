@@ -140,10 +140,10 @@
                                         </svg>
                                     </button>
                                     
-                                    <!-- درخواست‌ها -->
+                                    <!-- درخواست های در انتظار -->
                                     <button 
                                         type="button"
-                                        title="درخواست‌ها"
+                                        title="درخواست های در انتظار"
                                         class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                                     >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

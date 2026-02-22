@@ -36,7 +36,7 @@
             </div>
 
             <!-- Sidebar Menu -->
-            <nav class="mt-6 px-4 space-y-8">
+            <nav class="mt-6 px-4 space-y-3">
                 <!-- Dashboard -->
                 <a href="{{ route('dashboard') }}" class="sidebar-item {{ request()->is('/') ? 'active' : '' }}">
                     <svg class="w-5 h-5 ml-3 shrink-0 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,12 +61,20 @@
                     <span class="text-white">کاربران</span>
                 </a>
 
-                <!-- Requests -->
-                <a href="{{ route('requests.index') }}" class="sidebar-item {{ request()->is('requests*') ? 'active' : '' }}">
+                <!-- Requests (Pending) -->
+                <a href="{{ route('requests.index') }}" class="sidebar-item {{ request()->routeIs('requests.index') ? 'active' : '' }}">
                     <svg class="w-5 h-5 ml-3 shrink-0 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <span class="text-white">درخواست‌ها</span>
+                    <span class="text-white">درخواست های در انتظار</span>
+                </a>
+
+                <!-- Requests (Approved) -->
+                <a href="{{ route('requests.approved') }}" class="sidebar-item {{ request()->routeIs('requests.approved') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 ml-3 shrink-0 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="text-white">درخواست های تایید شده</span>
                 </a>
 
                 <!-- Settings -->
@@ -80,7 +88,7 @@
             </nav>
 
             <!-- Sidebar Footer -->
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white border-opacity-5">
+            <div class="absolute bottom-0 left-0 right-0 p-4">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-sm text-white">{{ Auth::user()->name }}</span>
                 </div>
@@ -113,16 +121,19 @@
 
     <style>
         .sidebar-item {
-            @apply flex items-center px-4 py-3 text-sm font-medium rounded-lg text-white hover:bg-white hover:bg-opacity-10 transition-all duration-200 ease-in-out;
+            @apply flex items-center font-medium rounded-lg text-white hover:bg-white hover:bg-opacity-10 transition-all duration-200 ease-in-out;
             display: flex;
             align-items: center;
+            font-size: 0.75rem;
+            padding: 0.65rem 0.875rem;
         }
         .sidebar-item.active {
-            @apply bg-white bg-opacity-35 text-white shadow-lg border-r-4 border-yellow-300;
+            background-color: rgba(33, 150, 243, 0.35);
             font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
         .sidebar-item.active svg {
-            @apply text-yellow-200;
+            color: #ffffff;
         }
         .sidebar-item:hover {
             @apply bg-white bg-opacity-15;
